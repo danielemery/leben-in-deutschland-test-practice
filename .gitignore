@@ -25,3 +25,6 @@ dist-ssr
 
 # Scraper temp storage
 scraper/storage/
+
+# OCR training data
+ocr/*.traineddata

@@ -1,0 +1,13 @@
+{
+  "name": "ocr",
+  "description": "OCR component",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ocr": "node index.js"
+  },
+  "dependencies": {
+    "tesseract.js": "^6.0.1"
+  }
+}
