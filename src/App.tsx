@@ -42,7 +42,7 @@ function QuizApp() {
       
       if (practiceMode === 'sequential') {
         // Sequential mode - just use question numbers in order
-        orderedNumbers = questions.map((q, index) => index + 1);
+        orderedNumbers = questions.map((_q, index) => index + 1);
       } else if (practiceMode === 'performance-based') {
         // Performance mode - sort by success rate
         const stats = await db.getAllQuestionStats();

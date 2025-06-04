@@ -12,6 +12,28 @@ Details on how to run the scraper can be found in the `scraper/README.md` file.
 
 The result of the scraper are stored in the `data/` directory with the naming convention: `${State}_BEFORE_OCR`, this saves scraping each time and also protects against changes in the website structure.
 
+## Docker
+
+This project includes a Dockerfile for building and deploying the application in a production-ready environment.
+
+### Building the Docker Image
+
+To build the Docker image:
+
+```bash
+docker build -t leben-in-deutschland-app .
+```
+
+### Running the Container Locally
+
+To run the container locally and access the app:
+
+```bash
+docker run -p 8080:80 leben-in-deutschland-app
+```
+
+This will make the application available at http://localhost:8080
+
 ## Vite
 
 Bootstrapped with vite (default README from here onwards)
