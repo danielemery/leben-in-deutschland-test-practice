@@ -31,15 +31,35 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
   const isCorrectAnswer = isAnswerSelected && question.answers[selectedAnswerIndex].isCorrect;
   
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
-      <div className="mb-4">
+    <div className="bg-white rounded-lg shadow-md p-6 mx-auto w-full max-w-2xl">
+      <div className="flex items-center justify-between mb-4">
         <span className="text-gray-500 text-sm">Question {question.questionNumber}</span>
+        
+        <div className="flex space-x-2">
+          <button
+            onClick={onPrevious}
+            disabled={!hasPrevious}
+            className="px-3 py-1 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <button
+            onClick={onNext}
+            disabled={!hasNext}
+            className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+      
+      <div className="mb-4">
         {showQuestionText ? (
           <h2 className="text-xl font-bold mt-1">{question.questionText}</h2>
         ) : (
           <button 
             onClick={toggleQuestionText}
-            className="text-blue-500 hover:text-blue-700 text-sm ml-2 underline font-normal"
+            className="text-blue-500 hover:text-blue-700 text-sm underline font-normal"
             aria-label="Show question text"
           >
             Show question text
@@ -113,23 +133,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
           <p className="text-gray-700">{question.explanation}</p>
         </div>
       )}
-      
-      <div className="flex justify-between mt-6">
-        <button
-          onClick={onPrevious}
-          disabled={!hasPrevious}
-          className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
-        >
-          Previous
-        </button>
-        <button
-          onClick={onNext}
-          disabled={!hasNext}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-        >
-          Next
-        </button>
-      </div>
     </div>
   );
 };

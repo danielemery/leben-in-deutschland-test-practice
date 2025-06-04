@@ -26,7 +26,7 @@ function QuizApp() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center min-h-screen bg-gray-100 pt-8 px-4">
       <h1 className="text-2xl font-bold mb-4">Leben in Deutschland</h1>
       <div className="mb-4">
         <label htmlFor="question-set" className="block text-sm font-medium text-gray-700 mb-2">Select Question Set:</label>
