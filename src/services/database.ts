@@ -26,6 +26,10 @@ class QuestionDatabase extends Dexie {
     return stat || { questionNumber, correctCount: 0, incorrectCount: 0 };
   }
 
+  async getAllQuestionStats(): Promise<QuestionStat[]> {
+    return await this.questionStats.toArray();
+  }
+
   async recordAnswer(questionNumber: number, isCorrect: boolean): Promise<void> {
     const stat = await this.getQuestionStats(questionNumber);
     
@@ -36,6 +40,14 @@ class QuestionDatabase extends Dexie {
     }
     
     await this.questionStats.put(stat);
+  }
+
+  // Calculate success rate
+  // Simple subtract incorrect count from correct count
+  // This will ensure that questions you have got right by chance will still
+  // be practiced
+  calculateSuccessRate(stat: QuestionStat): number {
+    return stat.correctCount - stat.incorrectCount;
   }
 }
 
