@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { type Question } from './types';
+import { db } from './services/database';
 
 interface QuestionCardProps {
   question: Question;
@@ -12,15 +13,37 @@ interface QuestionCardProps {
 const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPrevious, hasNext = false, hasPrevious = false }) => {
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
   const [showQuestionText, setShowQuestionText] = useState<boolean>(false);
+  const [stats, setStats] = useState<{ correctCount: number, incorrectCount: number }>({ correctCount: 0, incorrectCount: 0 });
 
   // Reset selected answer and hide text whenever the question changes
   useEffect(() => {
     setSelectedAnswerIndex(null);
     setShowQuestionText(false);
+    
+    // Load stats for this question
+    const loadStats = async () => {
+      const questionStats = await db.getQuestionStats(question.questionNumber);
+      setStats({
+        correctCount: questionStats.correctCount,
+        incorrectCount: questionStats.incorrectCount
+      });
+    };
+    
+    loadStats();
   }, [question.questionNumber]);
   
-  const handleAnswerSelection = (index: number) => {
+  const handleAnswerSelection = async (index: number) => {
     setSelectedAnswerIndex(index);
+    
+    // Record the answer in the database
+    const isCorrect = question.answers[index].isCorrect;
+    await db.recordAnswer(question.questionNumber, isCorrect);
+    
+    // Update local stats
+    setStats(prev => ({
+      correctCount: isCorrect ? prev.correctCount + 1 : prev.correctCount,
+      incorrectCount: !isCorrect ? prev.incorrectCount + 1 : prev.incorrectCount,
+    }));
   };
   
   const toggleQuestionText = () => {
@@ -33,7 +56,17 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mx-auto w-full max-w-2xl">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-gray-500 text-sm">Question {question.questionNumber}</span>
+        <div>
+          <span className="text-gray-500 text-sm">Question {question.questionNumber}</span>
+          <div className="text-xs mt-1 text-gray-600">
+            <span className="inline-block mr-3">
+              <span className="text-green-600">✓</span> {stats.correctCount}
+            </span>
+            <span className="inline-block">
+              <span className="text-red-600">✗</span> {stats.incorrectCount}
+            </span>
+          </div>
+        </div>
         
         <div className="flex space-x-2">
           <button
