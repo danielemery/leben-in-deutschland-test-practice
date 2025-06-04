@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import type { Question } from "./types";
 
-export function useLoadQuestions() {
+export function useLoadQuestions(initialSet?: string) {
   // Load questions from the public folder
   const [questionSets, setQuestionSets] = useState<Record<string, () => Promise<{ default: Question[] }>> | undefined>(undefined);
   const [isLoadingSets, setIsLoadingSets] = useState<boolean>(true);
-  const [selectedSet, setSelectedSet] = useState<string | undefined>(undefined);
+  const [selectedSet, setSelectedSet] = useState<string | undefined>(initialSet);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState<boolean>(false);
 
   const [questions, setQuestions] = useState<Question[] | undefined>(undefined);
@@ -49,6 +49,7 @@ export function useLoadQuestions() {
     isLoadingQuestions,
     questions,
     availableSets: questionSets ? Object.keys(questionSets) : [],
-    setSelectedSet
+    setSelectedSet,
+    selectedSet
   };
 }

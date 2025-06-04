@@ -1,13 +1,22 @@
 import QuestionCard from './QuestionCard'
 import { useLoadQuestions } from './useLoadQuestions';
 import { BrowserRouter, Routes, Route, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 function QuizApp() {
   // Use react-router's hooks for search params
   const [searchParams, setSearchParams] = useSearchParams();
   const questionNumber = searchParams.get('questionNumber') ? parseInt(searchParams.get('questionNumber')!) : 1;
+  const setFromUrl = searchParams.get('set') || undefined;
 
-  const { availableSets, isLoadingQuestions, isLoadingSets, questions, setSelectedSet } = useLoadQuestions();
+  const { availableSets, isLoadingQuestions, isLoadingSets, questions, setSelectedSet, selectedSet } = useLoadQuestions(setFromUrl);
+
+  // When available sets load and we have a set in the URL, ensure it's selected
+  useEffect(() => {
+    if (setFromUrl && availableSets.includes(setFromUrl)) {
+      setSelectedSet(setFromUrl);
+    }
+  }, [availableSets, setFromUrl, setSelectedSet]);
 
   const isLoading = isLoadingSets || isLoadingQuestions;
 
@@ -17,12 +26,30 @@ function QuizApp() {
 
   function handleNextQuestion() {
     const nextQuestionNumber = questionNumber + 1;
-    setSearchParams({ questionNumber: nextQuestionNumber.toString() });
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set('questionNumber', nextQuestionNumber.toString());
+      return newParams;
+    });
   }
 
   function handlePreviousQuestion() {
     const previousQuestionNumber = questionNumber - 1;
-    setSearchParams({ questionNumber: previousQuestionNumber.toString() });
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set('questionNumber', previousQuestionNumber.toString());
+      return newParams;
+    });
+  }
+
+  function handleSetChange(set: string) {
+    setSelectedSet(set);
+    setSearchParams(prev => {
+      const newParams = new URLSearchParams(prev);
+      newParams.set('set', set);
+      newParams.set('questionNumber', '1'); // Reset to first question when changing sets
+      return newParams;
+    });
   }
 
   return (
@@ -33,7 +60,8 @@ function QuizApp() {
         <select
           id="question-set"
           className="border border-gray-300 rounded-md p-2"
-          onChange={(e) => setSelectedSet(e.target.value)}
+          onChange={(e) => handleSetChange(e.target.value)}
+          value={selectedSet || ""}
         >
           <option value="">-- Select a set --</option>
           {availableSets.map((set) => (
