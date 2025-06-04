@@ -13,7 +13,7 @@ export function useLoadQuestions(initialSet?: string) {
   useEffect(() => {
     const loadQuestionSets = async () => {
       setIsLoadingSets(true);
-      const questionFiles = await import.meta.glob<{ default: Question[] }>('/public/data/*.json');
+      const questionFiles = await import.meta.glob<{ default: Question[] }>('/data/*.json');
       setQuestionSets(questionFiles);
       setIsLoadingSets(false);
     };
