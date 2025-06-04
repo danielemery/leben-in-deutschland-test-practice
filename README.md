@@ -4,7 +4,17 @@ Simple web app to practice Leben in Deutschland questions.
 
 Hosted with Vercel at https://lid-practice.demery.net/
 
-Bootstrapped with vite
+## Scraper
+
+A scraper is included to fetch the latest questions from the official website.
+
+Details on how to run the scraper can be found in the `scraper/README.md` file.
+
+The result of the scraper are stored in the `data/` directory with the naming convention: `${State}_BEFORE_OCR`, this saves scraping each time and also protects against changes in the website structure.
+
+## Vite
+
+Bootstrapped with vite (default README from here onwards)
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

@@ -1,0 +1,13 @@
+{
+  "name": "scraper",
+  "description": "Web scraper component",
+  "main": "index.js",
+  "scripts": {
+    "scrape": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "crawlee": "^3.13.5",
+    "playwright": "^1.52.0"
+  }
+}
