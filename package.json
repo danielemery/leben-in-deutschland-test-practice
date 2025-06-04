@@ -8,11 +8,15 @@
     "dev": "vite --host",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "copyData": "mkdir -p ./public/data/ && cp ./data/*_AFTER_OCR.json ./public/data/"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.8",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.2",
+    "tailwindcss": "^4.1.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
