@@ -124,6 +124,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
           const isSelected = selectedAnswerIndex === index;
           let bgColor = "bg-white";
           
+          // Determine if this answer is correct and we should show it
+          const shouldHighlightCorrect = isAnswerSelected && answer.isCorrect;
+          
           if (isSelected) {
             bgColor = answer.isCorrect ? "bg-green-100" : "bg-red-100";
           }
@@ -151,9 +154,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
                 {answer.text}
               </label>
               
-              {isSelected && (
+              {(isSelected || shouldHighlightCorrect) && (
                 <span className={answer.isCorrect ? "text-green-600" : "text-red-600"}>
-                  {answer.isCorrect ? "✓" : "✗"}
+                  {answer.isCorrect ? "✓" : (isSelected ? "✗" : "")}
                 </span>
               )}
             </div>
