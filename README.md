@@ -14,6 +14,12 @@ Details on how to run the scraper can be found in the `scraper/README.md` file.
 
 The result of the scraper are stored in the `data/` directory with the naming convention: `${State}_BEFORE_OCR`, this saves scraping each time and also protects against changes in the website structure.
 
+## OCR
+
+An OCR (Optical Character Recognition) step is included to convert the scraped images into text.
+
+Details on how to run the OCR can be found in the `ocr/README.md` file.
+
 ## Docker
 
 This project includes a Dockerfile for building and deploying the application in a production-ready environment.
