@@ -4,6 +4,8 @@ Simple web app to practice Leben in Deutschland questions.
 
 Hosted with Vercel at https://lid-practice.demery.net/
 
+Disclaimer: This project was mostly [vibe-coded](https://en.wikipedia.org/wiki/Vibe_coding) and should not be considered a reflection of my coding abilities 😎.
+
 ## Scraper
 
 A scraper is included to fetch the latest questions from the official website.
