@@ -18,8 +18,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
   // Reset selected answer and hide text whenever the question changes
   useEffect(() => {
     setSelectedAnswerIndex(null);
-    setShowQuestionText(false);
-    
+    setShowQuestionText(!question.questionImageUrl);
+
     // Load stats for this question
     const loadStats = async () => {
       const questionStats = await db.getQuestionStats(question.questionNumber);
@@ -28,31 +28,31 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
         incorrectCount: questionStats.incorrectCount
       });
     };
-    
+
     loadStats();
-  }, [question.questionNumber]);
-  
+  }, [question.questionNumber, question.questionImageUrl]);
+
   const handleAnswerSelection = async (index: number) => {
     setSelectedAnswerIndex(index);
-    
+
     // Record the answer in the database
     const isCorrect = question.answers[index].isCorrect;
     await db.recordAnswer(question.questionNumber, isCorrect);
-    
+
     // Update local stats
     setStats(prev => ({
       correctCount: isCorrect ? prev.correctCount + 1 : prev.correctCount,
       incorrectCount: !isCorrect ? prev.incorrectCount + 1 : prev.incorrectCount,
     }));
   };
-  
+
   const toggleQuestionText = () => {
     setShowQuestionText(prev => !prev);
   };
-  
+
   const isAnswerSelected = selectedAnswerIndex !== null;
   const isCorrectAnswer = isAnswerSelected && question.answers[selectedAnswerIndex].isCorrect;
-  
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mx-auto w-full max-w-2xl">
       <div className="flex items-center justify-between mb-4">
@@ -67,7 +67,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
             </span>
           </div>
         </div>
-        
+
         <div className="flex space-x-2">
           <button
             onClick={onPrevious}
@@ -85,12 +85,22 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
           </button>
         </div>
       </div>
-      
+
+      {question.questionImageUrl && (
+        <div className="mb-4">
+          <img
+            src={question.questionImageUrl}
+            alt="Question visual"
+            className="w-full rounded-md"
+          />
+        </div>
+      )}
+
       <div className="mb-4">
         {showQuestionText ? (
           <h2 className="text-xl font-bold mt-1">{question.questionText}</h2>
         ) : (
-          <button 
+          <button
             onClick={toggleQuestionText}
             className="text-blue-500 hover:text-blue-700 text-sm underline font-normal"
             aria-label="Show question text"
@@ -99,7 +109,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
           </button>
         )}
         {showQuestionText && (
-          <button 
+          <button
             onClick={toggleQuestionText}
             className="text-blue-500 hover:text-blue-700 text-sm ml-2 underline font-normal"
             aria-label="Hide question text"
@@ -108,35 +118,24 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
           </button>
         )}
       </div>
-      
-      {question.questionImageUrl && (
-        <div className="mb-4">
-          <img 
-            src={question.questionImageUrl} 
-            alt="Question visual" 
-            className="w-full rounded-md"
-          />
-        </div>
-      )}
-      
+
       <div className="space-y-3 mb-6">
         {question.answers.map((answer, index) => {
           const isSelected = selectedAnswerIndex === index;
           let bgColor = "bg-white";
-          
+
           // Determine if this answer is correct and we should show it
           const shouldHighlightCorrect = isAnswerSelected && answer.isCorrect;
-          
+
           if (isSelected) {
             bgColor = answer.isCorrect ? "bg-green-100" : "bg-red-100";
           }
-          
+
           return (
-            <div 
+            <div
               key={index}
-              className={`flex items-start p-3 border rounded-md ${bgColor} ${
-                isSelected ? 'ring-2 ' + (answer.isCorrect ? 'ring-green-500' : 'ring-red-500') : 'hover:bg-gray-50'
-              }`}
+              className={`flex items-start p-3 border rounded-md ${bgColor} ${isSelected ? 'ring-2 ' + (answer.isCorrect ? 'ring-green-500' : 'ring-red-500') : 'hover:bg-gray-50'
+                }`}
             >
               <input
                 type="radio"
@@ -147,13 +146,13 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
                 onChange={() => handleAnswerSelection(index)}
                 disabled={isAnswerSelected}
               />
-              <label 
+              <label
                 htmlFor={`answer-${index}`}
                 className="ml-3 cursor-pointer flex-grow"
               >
                 {answer.text}
               </label>
-              
+
               {(isSelected || shouldHighlightCorrect) && (
                 <span className={answer.isCorrect ? "text-green-600" : "text-red-600"}>
                   {answer.isCorrect ? "✓" : (isSelected ? "✗" : "")}
@@ -163,7 +162,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({ question, onNext, onPreviou
           );
         })}
       </div>
-      
+
       {isAnswerSelected && question.explanation && (
         <div className={`mb-4 p-4 rounded-md ${isCorrectAnswer ? 'bg-green-50' : 'bg-red-50'}`}>
           <p className="text-gray-700">{question.explanation}</p>
