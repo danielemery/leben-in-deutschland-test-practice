@@ -1,5 +1,5 @@
 import QuestionCard from './QuestionCard'
-import { useLoadQuestions } from './useLoadQuestions';
+import { useQuestions, availableStates, type StateName } from './useQuestions';
 import { BrowserRouter, Routes, Route, useSearchParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import { db } from './services/database';
@@ -12,7 +12,7 @@ function QuizApp() {
   // Use react-router's hooks for search params
   const [searchParams, setSearchParams] = useSearchParams();
   const questionNumber = searchParams.get('questionNumber') ? parseInt(searchParams.get('questionNumber')!) : 1;
-  const setFromUrl = searchParams.get('set') || undefined;
+  const stateFromUrl = searchParams.get('set') || undefined;
   const practiceMode = (searchParams.get('mode') as PracticeMode) || 'sequential';
 
   const [questionOrder, setQuestionOrder] = useState<number[]>([]);
@@ -21,14 +21,7 @@ function QuizApp() {
   // Use a ref to track mode changes
   const previousMode = useRef<PracticeMode | null>(null);
 
-  const { availableSets, isLoadingQuestions, isLoadingSets, questions, setSelectedSet, selectedSet } = useLoadQuestions(setFromUrl);
-
-  // When available sets load and we have a set in the URL, ensure it's selected
-  useEffect(() => {
-    if (setFromUrl && availableSets.includes(setFromUrl)) {
-      setSelectedSet(setFromUrl);
-    }
-  }, [availableSets, setFromUrl, setSelectedSet]);
+  const { questions, error } = useQuestions(stateFromUrl);
 
   // Calculate question order when questions change or practice mode changes
   useEffect(() => {
@@ -91,13 +84,9 @@ function QuizApp() {
     };
 
     updateQuestionOrder();
-  }, [questions, practiceMode, questionNumber, setSearchParams]);
-
-  const isLoading = isLoadingSets || isLoadingQuestions;
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // Ignoring this because questions only change when the user selects a different state
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [practiceMode, questionNumber, setSearchParams]);
 
   function handleNextQuestion() {
     if (currentQuestionIndex < questionOrder.length - 1) {
@@ -127,8 +116,7 @@ function QuizApp() {
     }
   }
 
-  function handleSetChange(set: string) {
-    setSelectedSet(set);
+  function handleStateChanged(set: StateName) {
     setSearchParams(prev => {
       const newParams = new URLSearchParams(prev);
       newParams.set('set', set);
@@ -156,17 +144,17 @@ function QuizApp() {
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <div>
           <label htmlFor="question-set" className="block text-sm font-medium text-gray-700 mb-2">
-            Select Question Set:
+            Select State:
           </label>
           <select
             id="question-set"
             className="border border-gray-300 rounded-md p-2"
-            onChange={(e) => handleSetChange(e.target.value)}
-            value={selectedSet || ""}
+            onChange={(e) => handleStateChanged(e.target.value as StateName)}
+            value={stateFromUrl || ""}
           >
             <option value="">-- Select a set --</option>
-            {availableSets.map((set) => (
-              <option key={set} value={set}>{set}</option>
+            {availableStates.map((state) => (
+              <option key={state} value={state}>{state}</option>
             ))}
           </select>
         </div>
@@ -187,7 +175,12 @@ function QuizApp() {
         </div>
       </div>
 
-      {currentQuestion ? (
+      {error ? (
+        <div className="bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 rounded mb-4 max-w-md w-full">
+          <p className="font-bold">Information</p>
+          <p>{error}</p>
+        </div>
+      ) : currentQuestion ? (
         <QuestionCard
           question={currentQuestion}
           hasNext={currentQuestionIndex < questionOrder.length - 1}
